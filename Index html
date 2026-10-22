@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MATRIX DATA — Matriz Analítica de Alocação Comportamental & Risco B2B</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --bg-primary: #0B0F19;
+      --bg-secondary: #111827;
+      --card-bg: #1F2937;
+      --accent-blue: #0EA5E9;
+      --accent-indigo: #6366F1;
+      --text-main: #F3F4F6;
+      --text-muted: #9CA3AF;
+      --border-color: #374151;
+      --highlight: #F59E0B;
+      --danger: #EF4444;
+      --success: #10B981;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    body { background-color: var(--bg-primary); color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; overflow-x: hidden; }
+
+    /* Top Navigation Bar */
+    nav.top-nav {
+      background-color: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .brand-area { display: flex; align-items: center; gap: 0.75rem; }
+    .brand-area i { font-size: 1.6rem; color: var(--accent-blue); }
+    .brand-title h1 { font-size: 1.1rem; font-weight: 800; letter-spacing: 0.05em; }
+    .brand-title span { font-size: 0.7rem; color: var(--accent-blue); font-weight: 600; background: rgba(14, 165, 233, 0.1); padding: 0.15rem 0.4rem; border-radius: 4px; }
+
+    .nav-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .nav-tab { background: transparent; border: 1px solid transparent; color: var(--text-muted); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s; }
+    .nav-tab:hover { background: rgba(255, 255, 255, 0.05); color: var(--text-main); }
+    .nav-tab.active { background: var(--accent-indigo); color: #FFF; border-color: rgba(255,255,255,0.1); }
+
+    .author-pill { background: rgba(14, 165, 233, 0.08); border: 1px solid rgba(14, 165, 233, 0.25); border-radius: 20px; padding: 0.35rem 0.85rem; font-size: 0.75rem; color: var(--text-main); display: flex; align-items: center; gap: 0.5rem; }
+    .author-pill strong { color: var(--accent-blue); }
+
+    /* Main App Container */
+    main.app-container { padding: 2rem; max-width: 1400px; margin: 0 auto; width: 100%; flex: 1; }
+
+    /* Views */
+    .view-section { display: none; }
+    .view-section.active { display: block; }
+
+    /* Grid Layouts */
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-bottom: 2rem; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+
+    .card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+    .card-title { font-size: 1rem; font-weight: 700; color: var(--accent-blue); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+    
+    /* KPI Metric Cards */
+    .kpi-card { display: flex; flex-direction: column; justify-content: space-between; }
+    .kpi-value { font-size: 1.8rem; font-weight: 800; color: #FFF; margin: 0.5rem 0; }
+    .kpi-sub { font-size: 0.75rem; color: var(--text-muted); }
+
+    /* Buttons & Actions */
+    .btn-primary { background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo)); color: #FFF; border: none; border-radius: 8px; padding: 0.75rem 1.25rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; transition: opacity 0.2s; }
+    .btn-primary:hover { opacity: 0.9; }
+
+    /* Form Inputs */
+    .form-group { margin-bottom: 1.2rem; }
+    .form-group label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.4rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+    .form-control { width: 100%; background-color: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.75rem; color: var(--text-main); font-size: 0.9rem; }
+    .form-control:focus { outline: none; border-color: var(--accent-blue); }
+
+    /* Profile List Selector */
+    .profile-select-bar { display: flex; gap: 0.75rem; overflow-x: auto; padding-bottom: 0.5rem; margin-bottom: 1.5rem; }
+    .profile-chip { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.6rem 1rem; cursor: pointer; min-width: 180px; transition: all 0.2s; flex-shrink: 0; }
+    .profile-chip:hover { border-color: var(--accent-blue); }
+    .profile-chip.active { background: rgba(99, 102, 241, 0.15); border-color: var(--accent-indigo); }
+    .profile-chip .name { font-weight: 700; font-size: 0.9rem; color: #FFF; }
+    .profile-chip .meta { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.1rem; }
+
+    /* Note Box & Badges */
+    .note-box { background: rgba(245, 158, 11, 0.05); border-left: 4px solid var(--highlight); padding: 1rem; border-radius: 0 8px 8px 0; font-size: 0.85rem; color: #E5E7EB; line-height: 1.6; }
+    .tag { background: rgba(99, 102, 241, 0.15); color: var(--accent-indigo); border: 1px solid rgba(99, 102, 241, 0.3); padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; display: inline-block; margin: 0.2rem; }
+
+    /* Vector Bars */
+    .vector-item { margin-bottom: 0.85rem; }
+    .vector-header { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.3rem; }
+    .bar-track { background: var(--bg-primary); height: 6px; border-radius: 3px; overflow: hidden; }
+    .bar-fill { background: linear-gradient(90deg, var(--accent-blue), var(--accent-indigo)); height: 100%; border-radius: 3px; }
+
+    /* Footer */
+    footer.app-footer { background-color: var(--bg-secondary); border-top: 1px solid var(--border-color); padding: 1.25rem 2rem; text-align: center; font-size: 0.75rem; color: var(--text-muted); margin-top: 3rem; }
+    footer.app-footer strong { color: var(--text-main); }
+
+    @media (max-width: 1024px) { .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; } nav.top-nav { flex-direction: column; gap: 1rem; } }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <nav class="top-nav">
+    <div class="brand-area">
+      <i class="fa-solid fa-chart-pie"></i>
+      <div class="brand-title">
+        <h1>MATRIX DATA</h1>
+        <span>B2B SAAS V2.5</span>
+      </div>
+    </div>
+    
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="switchView('dashboard')"><i class="fa-solid fa-chart-line"></i> Dashboard</button>
+      <button class="nav-tab" onclick="switchView('input')"><i class="fa-solid fa-user-plus"></i> Nova Análise</button>
+      <button class="nav-tab" onclick="switchView('report')"><i class="fa-solid fa-file-contract"></i> Relatório Executivo</button>
+      <button class="nav-tab" onclick="switchView('simulator')"><i class="fa-solid fa-calculator"></i> Simulador ROI</button>
+      <button class="nav-tab" onclick="switchView('team')"><i class="fa-solid fa-users-gear"></i> Matriz de Equipa</button>
+    </div>
+
+    <div class="author-pill">
+      <i class="fa-solid fa-copyright"></i> <span>IP: <strong>Fausto Antonio Gaspar</strong></span>
+    </div>
+  </nav>
+
+  <!-- Main Content Area -->
+  <main class="app-container">
+
+    <!-- VIEW 1: DASHBOARD GENERAL -->
+    <section id="view-dashboard" class="view-section active">
+      <div class="grid-4">
+        <div class="card kpi-card">
+          <div class="kpi-sub">PERFIS ANALISADOS</div>
+          <div class="kpi-value" id="kpiTotal">4</div>
+          <div style="font-size: 0.75rem; color: var(--success);"><i class="fa-solid fa-check"></i> Base Determinística Ativa</div>
+        </div>
+        <div class="card kpi-card">
+          <div class="kpi-sub">REDUÇÃO MÉDIA DE TURNOVER</div>
+          <div class="kpi-value" style="color: var(--accent-blue);">-42%</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Prevenção de incompatibilidade cultural</div>
+        </div>
+        <div class="card kpi-card">
+          <div class="kpi-sub">ROI DO CAPITAL HUMANO</div>
+          <div class="kpi-value" style="color: var(--success);">836%</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Retorno projetado sobre o SaaS</div>
+        </div>
+        <div class="card kpi-card">
+          <div class="kpi-sub">ACURÁCIA ARQUETÍPICA</div>
+          <div class="kpi-value" style="color: var(--highlight);">94.8%</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Validação cruzada sem viés</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom: 2rem;">
+        <div class="card-title"><i class="fa-solid fa-bolt"></i> Ações Rápidas & Controlo de Auditoria</div>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <button class="btn-primary" onclick="switchView('input')"><i class="fa-solid fa-plus"></i> Iniciar Nova Auditoria</button>
+          <button class="btn-primary" style="background: var(--bg-secondary); border: 1px solid var(--border-color);" onclick="switchView('simulator')"><i class="fa-solid fa-chart-column"></i> Simular Impacto Financeiro</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-list-check"></i> Resumo dos Colaboradores Mapeados</div>
+        <div class="profile-select-bar" id="dashboardProfileList"></div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: NOVA ANÁLISE (INPUT) -->
+    <section id="view-input" class="view-section">
+      <div class="card" style="max-width: 800px; margin: 0 auto;">
+        <div class="card-title"><i class="fa-solid fa-user-gear"></i> Cadastro de Novo Perfil para Auditoria Determinística</div>
+        <form onsubmit="handleNewAnalysis(event)">
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Nome Completo do Colaborador</label>
+              <input type="text" class="form-control" id="inpName" required placeholder="Ex: Nome Sobrenome">
+            </div>
+            <div class="form-group">
+              <label>Data de Nascimento</label>
+              <input type="date" class="form-control" id="inpDate" required>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Local de Nascimento (Cidade, País)</label>
+              <input type="text" class="form-control" id="inpLocal" required placeholder="Ex: Luanda, Angola">
+            </div>
+            <div class="form-group">
+              <label>Hora de Nascimento (Opcional)</label>
+              <input type="time" class="form-control" id="inpTime">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Cargo ou Função Pretendida / Alocada</label>
+            <input type="text" class="form-control" id="inpRole" required placeholder="Ex: Gestor de Operações & Logística">
+          </div>
+          <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 1rem;">
+            <i class="fa-solid fa-microchip"></i> Processar Matriz de Atrito & Latência Estrutural
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- VIEW 3: RELATÓRIO EXECUTIVO (OUTPUT) -->
+    <section id="view-report" class="view-section">
+      <div class="profile-select-bar" id="reportProfileSelector"></div>
+
+      <div class="grid-3" style="margin-bottom: 1.5rem;">
+        <div class="card">
+          <div class="card-title"><i class="fa-solid fa-id-card"></i> Identificação & Matriz</div>
+          <div id="repIdentity" style="font-size: 0.9rem; line-height: 1.6;"></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="fa-solid fa-clock"></i> Latência Estrutural (Ociosidade)</div>
+          <div class="kpi-value" id="repLatencia" style="color: var(--danger); text-align: center; margin: 1rem 0;">—</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); text-align: center;">Baseado nos estudos de ociosidade operacional e atrito de função.</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="fa-solid fa-fire"></i> Índice de Atrito Operacional</div>
+          <div class="kpi-value" id="repAtrito" style="color: var(--highlight); text-align: center; margin: 1rem 0;">—</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); text-align: center;">Risco calculado de desgaste e incompatibilidade de adaptação.</div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom: 1.5rem;">
+        <div class="card">
+          <div class="card-title"><i class="fa-solid fa-book-bookmark"></i> Nota Metodológica (Neutralização de Viés)</div>
+          <div class="note-box" id="repNota"></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="fa-solid fa-sliders"></i> Vetores de Performance Operacional</div>
+          <div id="repVetores"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="color: var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Diagnóstico de Riscos Comportamentais & Sombras na Função</div>
+        <ul id="repSombras" style="list-style-position: inside; line-height: 1.8; color: var(--text-muted); font-size: 0.9rem;"></ul>
+      </div>
+    </section>
+
+    <!-- VIEW 4: SIMULADOR ROI TURNOVER -->
+    <section id="view-simulator" class="view-section">
+      <div class="card" style="max-width: 900px; margin: 0 auto;">
+        <div class="card-title"><i class="fa-solid fa-calculator"></i> Simulador Financeiro de Prevenção de Turnover & ROI (B2B)</div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">Estime o impacto financeiro da aplicação da Matriz Analítica na retenção de capital humano e redução de custos com rescisões precoces.</p>
+        
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Número Total de Colaboradores na Empresa</label>
+            <input type="number" class="form-control" id="simColab" value="120" oninput="calculateROI()">
+          </div>
+          <div class="form-group">
+            <label>Salário Médio Mensal (Kz / Moeda Base)</label>
+            <input type="number" class="form-control" id="simSalario" value="350000" oninput="calculateROI()">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Taxa Anual de Turnover Esperada (%)</label>
+          <input type="range" min="5" max="50" value="22" class="form-control" id="simTurnover" oninput="calculateROI()">
+          <div style="font-size: 0.8rem; color: var(--accent-blue); margin-top: 0.3rem;" id="turnoverVal">22% ao ano</div>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1.5rem 0;">
+
+        <div class="grid-3">
+          <div class="card" style="background: var(--bg-primary);">
+            <div class="kpi-sub">CUSTO ATUAL DE TURNOVER (PREJUÍZO)</div>
+            <div class="kpi-value" id="resCustoAtual" style="font-size: 1.3rem; color: var(--danger);">32.340.000 Kz</div>
+            <div class="kpi-sub">Gasto anual estimado com rescisões e novas contratações.</div>
+          </div>
+          <div class="card" style="background: var(--bg-primary);">
+            <div class="kpi-sub">ECONOMIA ANUAL COM MATRIZ</div>
+            <div class="kpi-value" id="resEconomia" style="font-size: 1.3rem; color: var(--success);">13.475.000 Kz</div>
+            <div class="kpi-sub">Evitando desalinhamentos de perfil e incompatibilidade.</div>
+          </div>
+          <div class="card" style="background: var(--bg-primary);">
+            <div class="kpi-sub">ROI PROJETADO DA SOLUÇÃO</div>
+            <div class="kpi-value" id="resROI" style="font-size: 1.5rem; color: var(--highlight);">836%</div>
+            <div class="kpi-sub">Retorno financeiro validado por auditoria B2B.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 5: MATRIZ DE EQUIPA -->
+    <section id="view-team" class="view-section">
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-users"></i> Análise de Complementaridade e Sinergia de Equipa</div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">Cruzamento de perfis para prevenir choques de liderança e mitigar a ociosidade coletiva estrutural.</p>
+        <div class="grid-2" id="teamMatrixContainer"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div><strong>Matriz Analítica de Alocação Comportamental®</strong> — Ferramenta B2B & HR-Tech.</div>
+    <div style="margin-top: 0.3rem;">Idealizado, Desenvolvido e Registado por <strong>Fausto Antonio Gaspar</strong> | UniCesumar</div>
+  </footer>
+
+  <script>
+    let database = [
+      {
+        id: "raquel",
+        nome: "Raquel Tchali Pereira Justino",
+        subtext: "Medicina / Gestão Intensiva & Preventiva",
+        dataNasc: "1998-09-08",
+        local: "Luanda, Angola",
+        formacao: "Medicina (Clínica Geral)",
+        atuacao: "Urgência Médica & Medicina Preventiva",
+        matriz: { cv: "8", sol: "Virgem", lua: "Capricórnio", asc: "Escorpião" },
+        notaMetodologica: "O Caminho de Vida 8 fundamenta a capacidade de execução sob alta responsabilidade institucional. A combinação de Sol em Virgem com Lua em Capricórnio estabelece rigor analítico, precisão clínica e disciplina inflexível para gerenciar protocolos críticos em ambientes de alta complexidade.",
+        latenciaScore: "32%",
+        indexAtrito: "78%",
+        vetores: [
+          { nome: "Rigor Métrico & Protocolos", valor: 96 },
+          { nome: "Gestão Sob Pressão / UTI", valor: 92 },
+          { nome: "Liderança Operacional", valor: 89 }
+        ],
+        sombras: [
+          "<strong>Risco de Burnout por Hiper-Exigência:</strong> Baixa tolerância a margens de erro normais em equipes juniores.",
+          "<strong>Latência por Rigor Excessivo:</strong> Paralisia temporária em processos quando os subordinados não atingem o padrão métrico estrito."
+        ]
+      },
+      {
+        id: "manolo",
+        nome: "Manolo Antonio Gaspar",
+        subtext: "Direito / Penal Econômico & Tribunal do Júri",
+        dataNasc: "1998-04-05",
+        local: "Luanda, Angola",
+        formacao: "Direito (Jurista)",
+        atuacao: "Direito Penal Econômico & Advocacy",
+        matriz: { cv: "5", sol: "Áries", lua: "Libra", asc: "Sagitário" },
+        notaMetodologica: "O Caminho de Vida 5 atua como o vetor de adaptabilidade e articulação tática. O Sol em Áries confere prontidão para o litígio, enquanto a Lua em Libra assegura o contrapeso de negociação perante o tribunal.",
+        latenciaScore: "68%",
+        indexAtrito: "62%",
+        vetores: [
+          { nome: "Advocacy & Persuasão", valor: 95 },
+          { nome: "Adaptabilidade & Réplica", valor: 93 },
+          { nome: "Estratégia Contenciosa", valor: 88 }
+        ],
+        sombras: [
+          "<strong>Desalinhamento com Rotinas Contratuais:</strong> Elevada ociosidade e atrito em tarefas burocráticas de execução lenta e repetitiva.",
+          "<strong>Impulsividade Tática:</strong> Necessidade de blindagem contra prazos passivos e conformidade cega."
+        ]
+      },
+      {
+        id: "dulcerio",
+        nome: "Dulcerio Nakafeka Chimbaia David",
+        subtext: "Medicina Offs
